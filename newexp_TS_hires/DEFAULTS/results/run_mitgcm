@@ -1,0 +1,43 @@
+##### 
+#####
+##### PBS INITIALISATION COMMANDS WILL BE INSERTED HERE
+#####
+#####
+
+source /etc/profile.d/modules.sh
+
+module load intel/intel-14
+module load intel/impi/4.1   
+#module load mvapich2/intel
+
+echo "MPI Used:"  `which mpirun`
+
+#change the working directory (default is home directory)
+echo Working directory is $PBS_O_WORKDIR
+cd $PBS_O_WORKDIR
+
+# Write out some information on the job
+echo Running on host `hostname`
+echo Time is `date`
+
+###### Define number of processors
+NPROCS=`wc -l < $PBS_NODEFILE`
+echo This job has allocated $NPROCS cpus
+
+# Tell me which nodes it is run on
+echo " "
+echo This job runs on the following processors:
+echo `cat $PBS_NODEFILE`
+echo " "
+
+#
+# Run the mpi job
+#
+
+# Setup regcache for MX
+
+export MX_RCACHE=0
+
+mpirun -np $NPROCS -machinefile $PBS_NODEFILE ./mitgcmuv
+
+
